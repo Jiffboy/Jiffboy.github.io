@@ -1,4 +1,3 @@
-//ROSS: MANAGE
 function History() {
 	var undoRedos = [];
 	var index = 0;
@@ -42,7 +41,6 @@ function History() {
 		return index < undoRedos.length;
 	}
 }
-//ROSS: ACTION
 function UndoRedo(undo,redo){
 	this.unexecute = undo;
 	this.execute = redo;
@@ -67,7 +65,7 @@ function printNotes(target) {
 	var canvas = document.getElementById("noteSheet");
 	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, totWidth, 120);
-	ctx.fillStyle = "#333333";
+	ctx.fillStyle = "#FFFFFF";
 	//draw lines
 	ctx.fillRect(0, 0, totWidth, 2.5);
 	ctx.fillRect(0, 25, totWidth, 2.5);
@@ -79,10 +77,10 @@ function printNotes(target) {
 	for(var i = 0; i < noteList.length; i++){
 		//if the target make yellow, otherwise black
 		if(i == target){
-			ctx.fillStyle = "#FFFF00";
+			ctx.fillStyle = "#4b0082";
 		}
 		else {
-			ctx.fillStyle = "#000000";
+			ctx.fillStyle = "#6f2bbf";
 		}
 		var yval = getNoteHeight(noteList[i].pitch);
 		//make notes with longer lengths longer
@@ -133,7 +131,6 @@ function pitchEvent(event) {
 		currPitch = "B";
 	else if( event.target.id == "buttonC2" )
 		currPitch = "C'";
-	//ROSS: ACTION
     undo = function(){document.getElementById("currPitch").innerHTML = prevPitch;}
 	redo = function(){document.getElementById("currPitch").innerHTML = currPitch;}
 	hist.add(new UndoRedo(undo,redo));
@@ -141,9 +138,12 @@ function pitchEvent(event) {
  //Handles when the length is changed, changes the current indicated length
  //and puts the information into an UndoRedo, and adds it to the history
 function lengthEvent(){
+	if(parseFloat(document.getElementById("setText").value) <= 0 || parseFloat(document.getElementById("setText").value) > 0.55 || document.getElementById("setText").value == ""){
+		document.getElementById("message").innerHTML = "note length must be between 0 and 0.55 seconds";
+		return;
+	}
 	var currVal = document.getElementById("setText").value;
 	var prevVal = document.getElementById("currLen").innerHTML;
-	//ROSS: ACTION
 	undo = function(){document.getElementById("currLen").innerHTML = prevVal;}
 	redo = function(){document.getElementById("currLen").innerHTML = currVal;}
 	hist.add(new UndoRedo(undo,redo));
@@ -152,9 +152,12 @@ function lengthEvent(){
 //Handles when a note is confirmed, adds the new note to the list of notes,
 //and adds the information to the UndoRedo, adds to history
 function confirmEvent(){
+	if(document.getElementById("currPitch").innerHTML == "" || document.getElementById("currLen").innerHTML == ""){
+		document.getElementById("message").innerHTML = "both note and length must be selected";
+		return;
+	}
 	var newNote = {pitch: document.getElementById("currPitch").innerHTML, 
 				  length: document.getElementById("currLen").innerHTML};
-	//ROSS: ACTION
 	undo = function(){noteList.pop();}
 	redo = function(){noteList.push(newNote);}
 	hist.add(new UndoRedo(undo, redo));
@@ -164,6 +167,11 @@ function confirmEvent(){
 //Handles play event, calls recursive function to play song
 function playEvent(){
 	playNotes(0);
+}
+
+//Handles help event when help button is hit
+function helpEvent() {
+	document.getElementById("message").innerHTML = "figure it out idiot";
 }
 
 //disables/enables undo and redo as necessary
@@ -179,7 +187,7 @@ function playNotes(index){
 	}
 	var sound = getNoteAudio(noteList[index]);
     sound.play();
-	sound.currentTime = 5 - noteList[index].length;
+	sound.currentTime = 0.55 - noteList[index].length;
 	printNotes(index);
 	sound.onended = function(){playNotes(index + 1)};
 }
@@ -208,14 +216,14 @@ function getNoteAudio(note){
 var hist = new History();
 var noteList = [];
 //This preloads all the audio files so they don't lag when played
-var audioList = [new Audio("res/C4_261.63Hz_5s.wav"),
-				 new Audio("res/D4_293.66Hz_5s.wav"),
-				 new Audio("res/E4_329.63Hz_5s.wav"),
-				 new Audio("res/F4_349.23Hz_5s.wav"),
-				 new Audio("res/G4_392Hz_5s.wav"),
-				 new Audio("res/A4_440Hz_5s.wav"),
-				 new Audio("res/B4_493.88Hz_5s.wav"),
-				 new Audio("res/C5_523.25Hz_5s.wav")];
+var audioList = [new Audio("res/C4.wav"),
+				 new Audio("res/D4.wav"),
+				 new Audio("res/E4.wav"),
+				 new Audio("res/F4.wav"),
+				 new Audio("res/G4.wav"),
+				 new Audio("res/A4.wav"),
+				 new Audio("res/B4.wav"),
+				 new Audio("res/C5.wav")];
 
 //attach all functions to html elements
 window.onload = function() {
@@ -232,6 +240,7 @@ window.onload = function() {
 	document.getElementById("undo").onclick = hist.undo;
 	document.getElementById("redo").onclick = hist.redo;
 	document.getElementById("play").onclick = playEvent;
+	document.getElementById("help").onclick = helpEvent;
 	
 	printNotes(-1);
 	
