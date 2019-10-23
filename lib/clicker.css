@@ -1,0 +1,39 @@
+button {
+  background-color: #6f2bbf;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  color: white;
+  padding: 10px 10px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: indigo;
+  margin: 5px 5px;
+}
+
+button:hover {
+  background-color: indigo;
+}
+
+button:active {
+  background-color: black;
+}
+
+button:disabled {
+  background-color: #985be6;
+}
+
+p {
+	text-align: center;
+	color: white;
+}
+
+body {
+	background-color: #985be6;
+}
+
+#cowardCallout {
+	color: red;
+	font-size: 500%;
+	text-shadow: -2px 0 indigo, 0 2px indigo, 2px 0 indigo, 0 -2px indigo;
+}
