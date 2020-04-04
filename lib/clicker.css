@@ -37,3 +37,36 @@ body {
 	font-size: 500%;
 	text-shadow: -2px 0 indigo, 0 2px indigo, 2px 0 indigo, 0 -2px indigo;
 }
+
+.textslider {
+  position: absolute;
+  width: 8%;
+  right: 10px;
+}
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 15px;
+  background: #6f2bbf;
+  outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #6f2bbf;
+  cursor: pointer;
+  border-style: solid;
+  border-width: 1px;
+  border-color: indigo;
+
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #4CAF50;
+  cursor: pointer;
+}

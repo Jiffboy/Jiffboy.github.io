@@ -6,7 +6,7 @@ var berserkTimer;
 var nextWah = 5;
 var baseAutoWahTime = 2000;
 var autoEnabled = true;
-var cowardMode = false;
+var volume = 0.5;
 var berserkMode = false;
 var berserkTimeRemaining;
 var berserkCooldown = false;
@@ -50,15 +50,12 @@ function stopStartEvent(){
     }
 }
 
-function cowardEvent(){
-	if(!cowardMode){
-		cowardMode = true;
+function volumeChangeEvent(){
+	volume = this.value / 100;
+	if(volume == 0)
 		document.getElementById("cowardCallout").innerText = "YOU ARE A COWARD";
-	}
-	else{
-		cowardMode = false;
+	else
 		document.getElementById("cowardCallout").innerText = "";
-	}
 }
 
 function berserkEvent(){
@@ -71,20 +68,19 @@ function berserkEvent(){
 
 function playWah(){
 	var wahAudio = new Audio("res/wah.mp3");
+	wahAudio.volume = volume;
 	wahCount++;
 	currentWah++;
     if(wahCount >= nextWah){
         document.getElementById("autoWahButton").disabled = false;
     }
 	document.getElementById("totalWah").innerHTML = wahCount;
-	document.getElementById('waluigiPicture').src='res/waluigiOpen.jpg';
-    if(!cowardMode){
-	    wahAudio.play();
-	    wahAudio.onended = wahEnd;
-    }
-    else{
-        wahEnd();
-    }
+	if(!volume == 0)
+		document.getElementById('waluigiPicture').src='res/waluigiOpen.jpg';
+	else
+		document.getElementById('waluigiPicture').src='res/waluigi.jpg'
+	wahAudio.play();
+	wahAudio.onended = wahEnd;
 }
 
 function playBerserkWah(wahsToPlay){
@@ -130,7 +126,7 @@ window.onload = function() {
 	document.getElementById("wahButton").onclick = wahEvent;
     document.getElementById("autoWahButton").onclick = newAutoEvent;
     document.getElementById("stopButton").onclick = stopStartEvent;
-    document.getElementById("cowardButton").onclick = cowardEvent;
+	document.getElementById("volume").onchange = volumeChangeEvent;
 	document.getElementById("berserk").onclick = berserkEvent;
     document.getElementById("autoWahButton").disabled = true;
     document.getElementById("wahPerSecond").innerHTML = "0";
