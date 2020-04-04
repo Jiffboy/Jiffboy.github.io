@@ -46,7 +46,9 @@ function stopStartEvent(){
         autoEnabled = true;
         document.getElementById("stopButton").innerText = "Stop";
         document.getElementById("wahPerSecond").innerHTML = getWahPerSecond();
-        timer = setInterval(wahEvent, baseAutoWahTime / autoWahCount);
+		wahEvent();
+		if(autoWahCount > 0)
+			timer = setInterval(wahEvent, baseAutoWahTime / autoWahCount);
     }
 }
 
