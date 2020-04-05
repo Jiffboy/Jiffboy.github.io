@@ -38,6 +38,12 @@ body {
 	text-shadow: -2px 0 indigo, 0 2px indigo, 2px 0 indigo, 0 -2px indigo;
 }
 
+h1 {
+  text-align: center;
+  color: indigo;
+  border-bottom: thin solid indigo;
+}
+
 .textslider {
   position: absolute;
   width: 8%;
