@@ -2,9 +2,10 @@
 autoWahCost = 5;
 
 class Item{
-	constructor(cost, title, exit){
+	constructor(cost, title, desc, exit){
 		this.cost = cost;
 		this.title = title;
+		this.description = desc;
 		this.exitFunction = exit;
 	}
 }
@@ -29,7 +30,7 @@ class Menu{
 	}
 	
 	fillMap(){
-		var item = new Item(5, 'Auto Wah', buyAutoWah);
+		var item = new Item(5, 'Auto Wah', 'Adds an additional wah source, wahing an additional 0.5 times per second', buyAutoWah);
 		this.itemMap.set('autoWah', item);
 	}
 	
@@ -46,6 +47,7 @@ class Menu{
 		cost.innerHTML = item.cost;
 		insert.appendChild(title);
 		insert.appendChild(cost);
+		insert.title = item.description;
 		insert.onclick = item.exitFunction;
 		insert.id = index;
 		if(wahCount >= item.cost)
