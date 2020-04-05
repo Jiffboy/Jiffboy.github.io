@@ -1,15 +1,103 @@
+//----------menu.js----------
+autoWahCost = 5;
+
+class Item{
+	constructor(cost, title, exit){
+		this.cost = cost;
+		this.title = title;
+		this.exitFunction = exit;
+	}
+}
+
+function buyAutoWah(){
+	autoWahCost = Math.ceil((autoWahCost * 5) / 2.75);
+	wahCount = wahCount - menu.getCost('autoWah');
+	document.getElementById("stopButton").disabled = false;
+	menu.removeItem('autoWah');
+	menu.updateCost('autoWah', autoWahCost); 
+	menu.addItem('autoWah');
+	newAutoEvent();
+	menu.refresh();
+}
+
+class Menu{
+	constructor(){
+		this.itemMap = new Map();
+		this.fillMap();
+		this.currentItems = [];
+		this.currentItems.push(this.itemMap.get('autoWah'));
+	}
+	
+	fillMap(){
+		var item = new Item(5, 'Auto Wah', buyAutoWah);
+		this.itemMap.set('autoWah', item);
+	}
+	
+	refresh(){
+		document.getElementById("menu").innerHTML = "";
+		this.currentItems.forEach(this.printItem);
+	}
+	
+	printItem(item, index){
+		var insert = document.createElement('button');
+		var title = document.createElement('p');
+		var cost = document.createElement('p');
+		title.innerHTML = item.title;
+		cost.innerHTML = item.cost;
+		insert.appendChild(title);
+		insert.appendChild(cost);
+		insert.onclick = item.exitFunction;
+		insert.id = index;
+		if(wahCount >= item.cost)
+			insert.disabled = false;
+		else
+			insert.disabled = true;
+		document.getElementById("menu").appendChild(insert);
+	}
+	
+	addItem(item){
+		this.currentItems.push(this.itemMap.get(item));
+	}
+	
+	removeItem(item){
+		var itemToRemove = this.itemMap.get(item);
+		for(var i = 0; i < this.currentItems.length; i++){
+			if(this.currentItems[i].title == itemToRemove.title){
+				this.currentItems.splice(i,1);
+				return;
+			}
+		}
+	}
+	getCost(item){
+		return this.itemMap.get(item).cost;
+	}
+	
+	updateCost(item, cost){
+		this.itemMap.get(item).cost = cost;
+	}
+	
+	enableButtons(cost){
+		for(var i = 0; i < this.currentItems.length; i++){
+			if(this.currentItems[i].cost <= cost)
+				document.getElementById(i).disabled = false;
+		}
+	}
+}
+
+//----------clicker.js-----------
+
 var wahCount = 0;
 var currentWah = 0;
 var autoWahCount = 0;
 var timer;
 var berserkTimer;
-var nextWah = 5;
 var baseAutoWahTime = 2000;
 var autoEnabled = true;
 var volume = 0.5;
 var berserkMode = false;
 var berserkTimeRemaining;
 var berserkCooldown = false;
+var menu = new Menu();
 
 function wahEvent(){
 	if(berserkMode){
@@ -28,11 +116,6 @@ function newAutoEvent(){
         timer = setInterval(wahEvent, baseAutoWahTime / autoWahCount);
     }
     document.getElementById("wahPerSecond").innerHTML = getWahPerSecond();
-    nextWah = Math.ceil((nextWah * 5) / 2.75);
-    document.getElementById("nextWah").innerHTML = nextWah;
-    if(!(wahCount >= nextWah)){
-        document.getElementById("autoWahButton").disabled = true;
-    }
 }
 
 function stopStartEvent(){
@@ -74,9 +157,7 @@ function playWah(){
 	wahAudio.volume = volume;
 	wahCount++;
 	currentWah++;
-    if(wahCount >= nextWah){
-        document.getElementById("autoWahButton").disabled = false;
-    }
+	menu.enableButtons(wahCount);
 	document.getElementById("totalWah").innerHTML = wahCount;
 	if(!volume == 0)
 		document.getElementById('waluigiPicture').src='res/waluigiOpen.jpg';
@@ -127,12 +208,11 @@ function getWahPerSecond(){
 
 window.onload = function() {
 	document.getElementById("wahButton").onclick = wahEvent;
-    document.getElementById("autoWahButton").onclick = newAutoEvent;
     document.getElementById("stopButton").onclick = stopStartEvent;
 	document.getElementById("volume").onchange = volumeChangeEvent;
 	document.getElementById("berserk").onclick = berserkEvent;
-    document.getElementById("autoWahButton").disabled = true;
     document.getElementById("wahPerSecond").innerHTML = "0";
-    document.getElementById("nextWah").innerHTML = nextWah;
 	document.getElementById("totalWah").innerHTML = wahCount;
+	document.getElementById("stopButton").disabled = true;
+	menu.refresh();
 }
