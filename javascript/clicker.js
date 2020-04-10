@@ -2,9 +2,9 @@
 autoWahCost = 5;
 
 class Item{
-	constructor(cost, title, desc, exit){
+	constructor(cost, id, desc, exit){
 		this.cost = cost;
-		this.title = title;
+		this.id = id;
 		this.description = desc;
 		this.exitFunction = exit;
 	}
@@ -21,17 +21,28 @@ function buyAutoWah(){
 	menu.refresh();
 }
 
+function buyBerserkMode(){
+	wahCount = wahCount - menu.getCost('berserkMode');
+	menu.removeItem('berserkMode');
+	menu.refresh();
+	var buff = new Buff('berserkMode', function() {berserkMode = true}, function() {berserkMode = false}, 20, 120);
+	buffBar.addBuff(buff, 'Berserk Mode');
+}
+
 class Menu{
 	constructor(){
 		this.itemMap = new Map();
 		this.fillMap();
 		this.currentItems = [];
 		this.currentItems.push(this.itemMap.get('autoWah'));
+		this.currentItems.push(this.itemMap.get('berserkMode'));
 	}
 	
 	fillMap(){
 		var item = new Item(5, 'Auto Wah', 'Adds an additional wah source, wahing an additional 0.5 times per second', buyAutoWah);
 		this.itemMap.set('autoWah', item);
+		var item = new Item(100, 'Berserk Mode', '', buyBerserkMode);
+		this.itemMap.set('berserkMode', item);
 	}
 	
 	refresh(){
@@ -86,6 +97,83 @@ class Menu{
 	}
 }
 
+//----------buff.js----------
+
+class BuffBar{
+	constructor(){
+		this.buffMap = new Map();
+	}
+	
+	addBuff(buff, title){
+		var insert = document.createElement('button');
+		var buttonCounter = document.createElement('div');
+		insert.innerHTML = title;
+		insert.appendChild(buttonCounter);
+		insert.addEventListener('click', function(){
+			buffBar.executeBuff(buff.id);
+		});
+		document.getElementById("buffs").appendChild(insert);
+		buff.setButton(insert);
+		this.buffMap.set(buff.id, buff);
+	}
+	
+	executeBuff(id){
+		this.buffMap.get(id).execute();
+	}
+	
+	countdownBuff(id){
+		//please don't ask about this, I don't want to talk about it
+		try{
+			this.buffMap.get(id).countdown();
+		}
+		catch{
+			this.buffBar.buffMap.get(id).countdown();
+		}
+	}
+}
+
+class Buff{
+	constructor(id, start, end, time, cooldown){
+		this.id = id;
+		this.startFunc = start;
+		this.endFunc = end;
+		this.runTime = time;
+		this.cooldown = cooldown;
+		this.isExecuting = false;
+	}
+	
+	setButton(button){
+		this.button = button;
+	}
+	
+	execute(){
+		if(!this.isExecuting){
+			this.timeRemaining = this.runTime;
+			this.isExecuting = true;
+			this.startFunc();
+			this.timer = setInterval(buffBar.countdownBuff, 1000, this.id);
+		}
+	}
+	
+	countdown(){
+		this.timeRemaining--;
+		this.button.children[0].innerHTML = " (" + this.timeRemaining.toString() + ")";
+		if(this.timeRemaining <= 0){
+			this.button.children[0].innerHTML = "";
+			if(this.isExecuting){
+				this.button.disabled = true;
+				this.isExecuting = false;
+				this.timeRemaining = this.cooldown;
+				this.endFunc();
+			}
+			else{
+				this.button.disabled = false;
+				clearInterval(this.timer);
+			}
+		}
+	}
+}
+
 //----------clicker.js-----------
 
 var wahCount = 0;
@@ -100,6 +188,7 @@ var berserkMode = false;
 var berserkTimeRemaining;
 var berserkCooldown = false;
 var menu = new Menu();
+var buffBar = new BuffBar();
 
 function wahEvent(){
 	if(berserkMode){
@@ -146,14 +235,6 @@ function volumeChangeEvent(){
 		document.getElementById("cowardCallout").innerText = "";
 }
 
-function berserkEvent(){
-	if(!berserkMode){
-		berserkMode = true;
-		berserkTimeRemaining = 20;
-		berserkTimer = setInterval(berserkCountdown, 1000);
-	}
-}
-
 function playWah(){
 	var wahAudio = new Audio("res/wah.mp3");
 	wahAudio.volume = volume;
@@ -182,28 +263,6 @@ function wahEnd(){
 	}
 }
 
-function berserkCountdown(){
-	berserkTimeRemaining--;
-	document.getElementById("berserkTime").innerHTML = " (" + berserkTimeRemaining.toString() + ")";
-	if(berserkTimeRemaining <= 0){
-		clearInterval(berserkTimer);
-		document.getElementById("berserkTime").innerHTML = "";
-		if(!berserkCooldown){
-			document.getElementById("wahButton").onclick = wahEvent;
-			document.getElementById("berserk").disabled = true;
-			berserkTimeRemaining = 120;
-			berserkTimer = setInterval(berserkCountdown, 1000);
-			berserkCooldown = true;
-			berserkMode = false;
-		}
-		else{
-			berserkCooldown = false;
-			document.getElementById("berserk").disabled = false;
-		}
-	}
-}
-
-
 function getWahPerSecond(){
     return (1 / ((baseAutoWahTime / autoWahCount) / 1000)).toString();
 }
@@ -212,7 +271,6 @@ window.onload = function() {
 	document.getElementById("wahButton").onclick = wahEvent;
     document.getElementById("stopButton").onclick = stopStartEvent;
 	document.getElementById("volume").onchange = volumeChangeEvent;
-	document.getElementById("berserk").onclick = berserkEvent;
     document.getElementById("wahPerSecond").innerHTML = "0";
 	document.getElementById("totalWah").innerHTML = wahCount;
 	document.getElementById("stopButton").disabled = true;

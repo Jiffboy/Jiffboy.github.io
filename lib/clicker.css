@@ -44,6 +44,10 @@ h1 {
   border-bottom: thin solid indigo;
 }
 
+button div{
+	display: inline-block;
+}
+
 .textslider {
   position: absolute;
   width: 8%;
