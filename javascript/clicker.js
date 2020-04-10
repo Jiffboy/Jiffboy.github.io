@@ -2,9 +2,9 @@
 autoWahCost = 5;
 
 class Item{
-	constructor(cost, id, desc, exit){
+	constructor(cost, title, desc, exit){
 		this.cost = cost;
-		this.id = id;
+		this.title = title;
 		this.description = desc;
 		this.exitFunction = exit;
 	}
