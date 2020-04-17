@@ -14,9 +14,7 @@ function buyAutoWah(){
 	autoWahCost = Math.ceil((autoWahCost * 5) / 2.75);
 	wahCount = wahCount - menu.getCost('autoWah');
 	document.getElementById("stopButton").disabled = false;
-	menu.removeItem('autoWah');
 	menu.updateCost('autoWah', autoWahCost); 
-	menu.addItem('autoWah');
 	newAutoEvent();
 	menu.refresh();
 }
