@@ -241,9 +241,15 @@ function playWah(){
 	menu.enableButtons(wahCount);
 	document.getElementById("totalWah").innerHTML = wahCount;
 	if(!volume == 0)
-		document.getElementById('waluigiPicture').src='res/waluigiOpen.jpg';
+		if(berserkMode)
+			document.getElementById('waluigiPicture').src='res/waluigiOpenBerserk.jpg';
+		else
+			document.getElementById('waluigiPicture').src='res/waluigiOpen.jpg';
 	else
-		document.getElementById('waluigiPicture').src='res/waluigi.jpg'
+		if(berserkMode)
+			document.getElementById('waluigiPicture').src='res/waluigiBerserk.jpg'
+		else
+			document.getElementById('waluigiPicture').src='res/waluigi.jpg'
 	wahAudio.play();
 	wahAudio.onended = wahEnd;
 }
@@ -257,7 +263,10 @@ function playBerserkWah(wahsToPlay){
 function wahEnd(){
 	currentWah--;
 	if(currentWah == 0){
-		document.getElementById('waluigiPicture').src='res/waluigi.jpg'
+		if(berserkMode)
+			document.getElementById('waluigiPicture').src='res/waluigiBerserk.jpg'
+		else
+			document.getElementById('waluigiPicture').src='res/waluigi.jpg'
 	}
 }
 
