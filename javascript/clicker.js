@@ -21,10 +21,44 @@ function buyAutoWah(){
 
 function buyBerserkMode(){
 	wahCount = wahCount - menu.getCost('berserkMode');
+	refreshWahCount();
 	menu.removeItem('berserkMode');
+	menu.addItem('berserkPotency');
+	menu.addItem('berserkCooldown');
+	menu.addItem('berserkDuration');
 	menu.refresh();
-	var buff = new Buff('berserkMode', function() {berserkMode = true}, function() {berserkMode = false}, 20, 120);
+	var buff = new Buff('berserkMode', function() {berserkMode = true}, function() {berserkMode = false}, 10, 120);
 	buffBar.addBuff(buff, 'Berserk Mode');
+}
+
+function buyBerserkPotency(){
+	wahCount = wahCount - menu.getCost('berserkPotency');
+	refreshWahCount();
+	berserkPotency = berserkPotency + 1;
+	menu.updateCost('berserkPotency', menu.getCost('berserkPotency') * 10);
+	menu.refresh();
+}
+
+function buyBuffCooldownReduction(id, buff, costIncr, coolDecr, mult){
+	wahCount = wahCount - menu.getCost(id);
+	refreshWahCount();
+	buffBar.updateBuffCooldown(buff, coolDecr);
+	if(mult)
+		menu.updateCost(id, menu.getCost(id) * costIncr);
+	else
+		menu.updateCost(id, menu.getCost(id) + costIncr);
+	menu.refresh();
+}
+
+function buyBuffDurationIncrease(id, buff, costIncr, durIncr, mult){
+	wahCount = wahCount - menu.getCost(id);
+	refreshWahCount();
+	buffBar.updateBuffDuration(buff, durIncr);
+	if(mult)
+		menu.updateCost(id, menu.getCost(id) * costIncr);
+	else
+		menu.updateCost(id, menu.getCost(id) + costIncr);
+	menu.refresh();
 }
 
 class Menu{
@@ -37,10 +71,11 @@ class Menu{
 	}
 	
 	fillMap(){
-		var item = new Item(5, 'Auto Wah', 'Adds an additional wah source, wahing an additional 0.5 times per second', buyAutoWah);
-		this.itemMap.set('autoWah', item);
-		var item = new Item(100, 'Berserk Mode', '', buyBerserkMode);
-		this.itemMap.set('berserkMode', item);
+		this.itemMap.set('autoWah',  new Item(5, 'Auto Wah', 'Adds an additional wah source, wahing an additional 0.5 times per second', buyAutoWah));
+		this.itemMap.set('berserkMode', new Item(100, 'Berserk Mode', '', buyBerserkMode));
+		this.itemMap.set('berserkPotency', new Item(100, 'Berserk Mode Potency', '', buyBerserkPotency));
+		this.itemMap.set('berserkCooldown', new Item(50, 'Berserk Mode Cooldown', '', function(){buyBuffCooldownReduction('berserkCooldown', 'berserkMode', 10, 10, true)}));
+		this.itemMap.set('berserkDuration', new Item(50, 'Berserk Mode Duration', '', function(){buyBuffDurationIncrease('berserkDuration', 'berserkMode', 10, 5, true)}));
 	}
 	
 	refresh(){
@@ -128,6 +163,22 @@ class BuffBar{
 			this.buffBar.buffMap.get(id).countdown();
 		}
 	}
+	
+	updateBuffCooldown(id, amount){
+		var buff = this.buffMap.get(id);
+		buff.cooldown = buff.cooldown - amount;
+		if(!buff.isExecuting && buff.timeRemaining > 0){
+			buff.timeRemaining = buff.timeRemaining - amount;
+		}
+	}
+	
+	updateBuffDuration(id, amount){
+		var buff = this.buffMap.get(id);
+		buff.duration = buff.duration + amount;
+		if(buff.isExecuting){
+			buff.timeRemaining = buff.timeRemaining + amount;
+		}
+	}
 }
 
 class Buff{
@@ -135,9 +186,10 @@ class Buff{
 		this.id = id;
 		this.startFunc = start;
 		this.endFunc = end;
-		this.runTime = time;
+		this.duration = time;
 		this.cooldown = cooldown;
 		this.isExecuting = false;
+		this.timeRemaining = 0;
 	}
 	
 	setButton(button){
@@ -146,7 +198,7 @@ class Buff{
 	
 	execute(){
 		if(!this.isExecuting){
-			this.timeRemaining = this.runTime;
+			this.timeRemaining = this.duration;
 			this.isExecuting = true;
 			this.startFunc();
 			this.timer = setInterval(buffBar.countdownBuff, 1000, this.id);
@@ -178,19 +230,17 @@ var wahCount = 0;
 var currentWah = 0;
 var autoWahCount = 0;
 var timer;
-var berserkTimer;
 var baseAutoWahTime = 2000;
 var autoEnabled = true;
 var volume = 0.5;
 var berserkMode = false;
-var berserkTimeRemaining;
-var berserkCooldown = false;
+var berserkPotency = 2;
 var menu = new Menu();
 var buffBar = new BuffBar();
 
 function wahEvent(){
 	if(berserkMode){
-		playBerserkWah(5);
+		playBerserkWah(berserkPotency);
 	}
 	else{
 		playWah();
@@ -239,7 +289,7 @@ function playWah(){
 	wahCount++;
 	currentWah++;
 	menu.enableButtons(wahCount);
-	document.getElementById("totalWah").innerHTML = wahCount;
+	refreshWahCount();
 	if(!volume == 0)
 		if(berserkMode)
 			document.getElementById('waluigiPicture').src='res/waluigiOpenBerserk.jpg';
@@ -274,12 +324,16 @@ function getWahPerSecond(){
     return (1 / ((baseAutoWahTime / autoWahCount) / 1000)).toString();
 }
 
+function refreshWahCount(){
+	document.getElementById("totalWah").innerHTML = wahCount;
+}
+
 window.onload = function() {
 	document.getElementById("wahButton").onclick = wahEvent;
     document.getElementById("stopButton").onclick = stopStartEvent;
 	document.getElementById("volume").onchange = volumeChangeEvent;
     document.getElementById("wahPerSecond").innerHTML = "0";
-	document.getElementById("totalWah").innerHTML = wahCount;
 	document.getElementById("stopButton").disabled = true;
+	refreshWahCount();
 	menu.refresh();
 }
