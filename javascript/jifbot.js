@@ -25,15 +25,18 @@ function loadCommands(){
 		for(var i=0; i < list.length; i++){
 			var item = document.createElement('div');
 			var head = document.createElement('h2');
-			head.innerHTML = json[i].command;
+			head.innerHTML = json[list[i]].command;
 			item.appendChild(head);
-			if("alias" in json[i]){
+			if("alias" in json[list[i]]){
 				var alias = document.createElement('p');
-				alias.innerHTML = "(" + json[i].alias.replaceAll(",",", ") + ")";
+				alias.innerHTML = "(" + json[list[i]].alias.replaceAll(",",", ") + ")";
 				item.appendChild(alias);
 			}
 			var desc = document.createElement('p');
-			desc.innerHTML = json[i].description.replaceAll("\n","<br>").replaceAll("```","<br>");
+			text = json[list[i]].description.replaceAll("\n","<br>").replaceAll("```","<br>");
+			index = text.indexOf("Usage:");
+			desc.innerHTML = text.substr(0,index);
+			desc.innerHTML += '<span style="color:#ffe199;">' + text.substr(index) + "</span>"
 			item.appendChild(desc);
 			document.getElementById("commands").appendChild(item);
 		}
