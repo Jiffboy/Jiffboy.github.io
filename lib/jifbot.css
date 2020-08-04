@@ -8,10 +8,9 @@ body {
 }
 h1 {
   text-align: center;
-  color: white;
-  border-bottom: thin solid white;
+  color: black;
+  border-bottom: thin solid black;
   font-family: "Smallest Pixel-7";
-  text-shadow: 2px 2px black;
 }
 #JifBot{
   color : black;
@@ -36,7 +35,7 @@ p {
   font-size: 20px;
 }
 
-div div{
+.itemContainer{
   background-color: #ff9100;
   border-radius: 20px;
   border-bottom: 4px solid #ff5400;
@@ -52,4 +51,26 @@ img {
   display: inline-block;
   margin-left: auto;
   margin-right: auto;
+}
+
+.collapsible {
+  background-color: #ffa200;
+  cursor: pointer;
+  padding: 18px;
+  width: 100%;
+  outline: none;
+  font-size: 25px;
+  text-align: center;
+  color: white;
+  border: none;
+  font-family: "Smallest Pixel-7";
+  text-shadow: 2px 2px black;
+}
+
+.active{
+  border-bottom: thin solid white;
+}
+
+.collapsible:hover{
+	
 }

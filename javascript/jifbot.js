@@ -19,11 +19,16 @@ function loadCommands(){
 		}
 	}
 	for (const [cat, list] of commandMap.entries()) {
-		var category = document.createElement('h1');
-		category.innerHTML = cat;
+		var catButton = document.createElement('button');
+		catButton.classList.add("collapsible");
+		catButton.innerHTML = cat;
+		var category = document.createElement('div');
+		category.id = cat;
+		document.getElementById("commands").appendChild(catButton);
 		document.getElementById("commands").appendChild(category);
 		for(var i=0; i < list.length; i++){
 			var item = document.createElement('div');
+			item.classList.add("itemContainer")
 			var head = document.createElement('h2');
 			head.innerHTML = json[list[i]].command;
 			item.appendChild(head);
@@ -38,11 +43,36 @@ function loadCommands(){
 			desc.innerHTML = text.substr(0,index);
 			desc.innerHTML += '<span style="color:#ffe199;">' + text.substr(index) + "</span>"
 			item.appendChild(desc);
-			document.getElementById("commands").appendChild(item);
+			category.appendChild(item);
 		}
 	}
 }
 
 window.onload = function() {
 	loadCommands();
+	var cat = document.getElementsByClassName("collapsible");
+	var i;
+
+	for (i = 0; i < cat.length; i++) {
+		document.getElementById(cat[i].innerHTML).style.display = "none";
+		
+		cat[i].addEventListener("click", function() {
+			this.classList.toggle("active");
+			var category = document.getElementById(this.innerHTML.replaceAll("-","").replaceAll(" ",""))
+			if (category.style.display === "block") {
+				category.style.display = "none";
+			} else {
+				category.style.display = "block";
+			}
+		});
+		
+		cat[i].addEventListener("mouseover", function() {
+			var text = this.innerHTML
+			this.innerHTML = "-- " + text + " --"
+		});
+		
+		cat[i].addEventListener("mouseout", function() {
+			this.innerHTML = this.innerHTML.replaceAll("-","")
+		});
+	}
 }
