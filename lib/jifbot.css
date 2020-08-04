@@ -11,6 +11,7 @@ h1 {
   color: black;
   border-bottom: thin solid black;
   font-family: "Smallest Pixel-7";
+  font-size: 50px;
 }
 #JifBot{
   color : black;
@@ -59,7 +60,7 @@ img {
   padding: 18px;
   width: 100%;
   outline: none;
-  font-size: 25px;
+  font-size: 35px;
   text-align: center;
   color: white;
   border: none;
