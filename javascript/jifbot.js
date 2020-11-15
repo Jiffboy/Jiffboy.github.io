@@ -35,9 +35,8 @@ function loadCommands(){
 
 			var desc = document.createElement('p');
 			text = json[list[i]].description.replaceAll("\n","<br>").replaceAll("```","<br>");
-			index = text.indexOf("Usage:");
-			desc.innerHTML += text.substr(0,index);
-			desc.innerHTML += '<span style="color:#ffe199;">' + text.substr(index) + "</span>"
+			usage = json[list[i]].usage.replaceAll("\n","<br>")
+			desc.innerHTML += text + '<br><span style="color:#ffe199;">Usage: ' + usage + "</span>"
 			if("alias" in json[list[i]]){
 				desc.innerHTML += "<br>(Also works for: " + json[list[i]].alias.replaceAll(",",", ") + ")";
 			}
