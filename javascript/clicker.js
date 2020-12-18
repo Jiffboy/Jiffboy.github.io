@@ -72,10 +72,10 @@ class Menu{
 	
 	fillMap(){
 		this.itemMap.set('autoWah',  new Item(5, 'Auto Wah', 'Adds an additional wah source, wahing an additional 0.5 times per second', buyAutoWah));
-		this.itemMap.set('berserkMode', new Item(100, 'Berserk Mode', '', buyBerserkMode));
-		this.itemMap.set('berserkPotency', new Item(100, 'Berserk Mode Potency', '', buyBerserkPotency));
-		this.itemMap.set('berserkCooldown', new Item(50, 'Berserk Mode Cooldown', '', function(){buyBuffCooldownReduction('berserkCooldown', 'berserkMode', 10, 10, true)}));
-		this.itemMap.set('berserkDuration', new Item(50, 'Berserk Mode Duration', '', function(){buyBuffDurationIncrease('berserkDuration', 'berserkMode', 10, 5, true)}));
+		this.itemMap.set('berserkMode', new Item(100, 'Berserk Mode', 'Unlocks Berserk Mode, allowing for massive wah gains in bursts', buyBerserkMode));
+		this.itemMap.set('berserkPotency', new Item(100, 'Berserk Mode Potency', 'Increases the number of wahs per click during Berserk Mode', buyBerserkPotency));
+		this.itemMap.set('berserkCooldown', new Item(50, 'Berserk Mode Cooldown', 'Decreases the amount of time between being able to use Berserk Mode', function(){buyBuffCooldownReduction('berserkCooldown', 'berserkMode', 10, 10, true)}));
+		this.itemMap.set('berserkDuration', new Item(50, 'Berserk Mode Duration', 'Increases the Duration of Berserk Mode', function(){buyBuffDurationIncrease('berserkDuration', 'berserkMode', 10, 5, true)}));
 	}
 	
 	refresh(){

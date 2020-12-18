@@ -1,0 +1,54 @@
+.content {
+  margin: 0 auto;
+}
+
+body {
+  background-color: #1b223d;
+}
+h1 {
+  text-align: center;
+  color: white;
+  font-size: 300%;
+}
+p {
+  text-align: center;
+  color: white;
+}
+
+a {
+  color: white;
+  border-color: black;
+  text-decoration: none;
+  text-align: center;
+  font-size: 150%;
+  display: inline-block;
+  padding: 10px 10px;
+  border-style: solid;
+  border-width: 1px;
+  margin: 5px 5px;
+  width: 15%;
+}
+
+#waluigi {
+	background-color: #75168a;
+}
+
+#waluigi:hover {
+  background-color: #470954;
+}
+
+#jifbot {
+	background-color: #8a5216;
+}
+
+#jifbot:hover {
+  background-color: #543009;
+}
+
+#colorguard {
+	background-color: #168a24;
+}
+
+#colorguard:hover {
+  background-color: #095412;
+}
