@@ -1,76 +1,79 @@
-String.prototype.replaceAll = function(search, replacement) {
-    var target = this;
-    return target.replace(new RegExp(search, 'g'), replacement);
-};
+var selectedButton = "All"
 
-function loadCommands(){
-	var json = JSON.parse(JSON.stringify(jifBotCommands));
-	var commandMap = new Map();
-	
-	for(var i = 0; i < json.length; i++){
-		if(json[i].category == "Hidden"){
-			continue;
-		}
-		else if(commandMap.has(json[i].category)){
-			commandMap.get(json[i].category).push(i);
-		}
-		else{
-			commandMap.set(json[i].category, [i]);
-		}
-	}
-	for (const [cat, list] of commandMap.entries()) {
-		var catButton = document.createElement('button');
-		catButton.classList.add("collapsible");
-		catButton.innerHTML = cat;
-		var category = document.createElement('div');
-		category.id = cat;
-		document.getElementById("commands").appendChild(catButton);
-		document.getElementById("commands").appendChild(category);
-		for(var i=0; i < list.length; i++){
-			var item = document.createElement('div');
-			item.classList.add("itemContainer")
-			var head = document.createElement('h2');
-			head.innerHTML = json[list[i]].command;
-			item.appendChild(head);
+function loadButtons(){
+    var json = JSON.parse(JSON.stringify(jifBotCommands));
+    var found = []
 
-			var desc = document.createElement('p');
-			text = json[list[i]].description.replaceAll("\n","<br>").replaceAll("```","<br>");
-			usage = json[list[i]].usage.replaceAll("\n","<br>")
-			desc.innerHTML += text + '<br><span style="color:#ffe199;">Usage: ' + usage + "</span>"
-			if("alias" in json[list[i]]){
-				desc.innerHTML += "<br>(Also works for: " + json[list[i]].alias.replaceAll(",",", ") + ")";
+    var button = document.createElement('button')
+    button.innerHTML = "All"
+    button.id = "All"
+    button.onclick = function(){
+        loadCommands("All")
+    }
+
+    document.getElementById("commandButtons").appendChild(button)
+
+    for(var i = 0; i < json.length; i++){
+        if(json[i].category == "Hidden"){
+            continue;
+        }
+        else if(!found.includes(json[i].category)){
+            var cat = json[i].category
+            var button = document.createElement('button')
+            found.push(cat)
+            button.innerHTML = cat
+            button.id = cat
+            button.onclick = function(){
+                
+                loadCommands(event.srcElement.innerHTML)
+            }
+            document.getElementById("commandButtons").appendChild(button)
+        }
+    }
+}
+
+function loadCommands(category){
+    document.getElementById(selectedButton).style.backgroundColor = ""
+    document.getElementById(category).style.backgroundColor = "#ffa200"
+    selectedButton = category
+    var json = JSON.parse(JSON.stringify(jifBotCommands));
+    document.getElementById("commands").innerHTML = ""
+    var command = document.createElement('th')
+    var description = document.createElement('th')
+    var usage = document.createElement('th')
+    command.innerHTML = "Command"
+    description.innerHTML = "Description"
+    usage.innerHTML = "Usage"
+    document.getElementById("commands").appendChild(command)
+    document.getElementById("commands").appendChild(description)
+    document.getElementById("commands").appendChild(usage)
+    for(var i = 0; i < json.length; i++){
+        if(json[i].category == "Hidden"){
+            continue;
+        }
+        else if(json[i].category == category || category == "All")
+        {
+            var row = document.createElement('tr')
+            var command = document.createElement('td')
+            var description = document.createElement('td')
+            var usage = document.createElement('td')
+            command.innerHTML = json[i].command
+            var alias = ""
+            if("alias" in json[i]){
+				alias = "<br>" + json[i].alias.replaceAll(",","<br>");
 			}
-			item.appendChild(desc);
-			category.appendChild(item);
-		}
-	}
+            command.innerHTML +='<span style="color:#ffe199;">' + alias + "</span>"
+            description.innerHTML = json[i].description.replaceAll("\n","<br>").replaceAll("```","<br>");
+            usage.innerHTML = json[i].usage.replaceAll("\n","<br>").replaceAll(",","<br>")         
+            row.appendChild(command)
+            row.appendChild(description)
+            row.appendChild(usage)
+            document.getElementById("commands").appendChild(row)
+        }
+    }
 }
 
 window.onload = function() {
-	loadCommands();
-	var cat = document.getElementsByClassName("collapsible");
-	var i;
-
-	for (i = 0; i < cat.length; i++) {
-		document.getElementById(cat[i].innerHTML).style.display = "none";
-		
-		cat[i].addEventListener("click", function() {
-			this.classList.toggle("active");
-			var category = document.getElementById(this.innerHTML.replaceAll("-","").replaceAll(" ",""))
-			if (category.style.display === "block") {
-				category.style.display = "none";
-			} else {
-				category.style.display = "block";
-			}
-		});
-		
-		cat[i].addEventListener("mouseover", function() {
-			var text = this.innerHTML
-			this.innerHTML = "-- " + text + " --"
-		});
-		
-		cat[i].addEventListener("mouseout", function() {
-			this.innerHTML = this.innerHTML.replaceAll("-","")
-		});
-	}
+    loadButtons();
+    loadCommands("All");
 }
